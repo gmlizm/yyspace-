@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databases>
+ <database>
+ <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select message_id, rule_id, status_recipe from tb_drug_rule_message</querysql>
+        <countsql>select count(1) from tb_drug_rule_message</countsql>
+        <hdfsfilepath>sys_config_path/task_name/tb_drug_rule_message</hdfsfilepath>
+    </database>
+    <database>
+        <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select id, product_id, zone_id, map_product_id, `ignore` from base_product</querysql>
+        <countsql>select count(1) from base_product</countsql>
+        <hdfsfilepath>sys_config_path/task_name/base_product</hdfsfilepath>
+    </database>
+    <database>
+        <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select product_id, ddd, ddd_unit, transSpecification, transSpecification_unit from base_product_property</querysql>
+        <countsql>select count(1) from base_product_property</countsql>
+        <hdfsfilepath>sys_config_path/task_name/base_product_property</hdfsfilepath>
+    </database>
+    <database>
+        <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select id, ddd, dddunit, transSpecification, enSpecUnit, specQuantity, chineseProductName, formulation, chineseSpecification, chineseManufactureName from tb_product</querysql>
+        <countsql>select count(1) from tb_product</countsql>
+        <hdfsfilepath>sys_config_path/task_name/tb_product</hdfsfilepath>
+    </database>
+    <database>
+        <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select name, value from sys_config where enable = 1</querysql>
+        <countsql>select count(1) from sys_config where enable = 1</countsql>
+        <hdfsfilepath>sys_config_path/task_name/sys_config</hdfsfilepath>
+    </database>
+    <database>
+        <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select org_id, code, type, meOrgId from auth_org</querysql>
+        <countsql>select count(1) from auth_org</countsql>
+        <hdfsfilepath>sys_config_path/task_name/auth_org</hdfsfilepath>
+    </database>
+    <database>
+        <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select id, drug_codes, no_drug_codes, product_ids, no_product_ids from report_drug_use_setting</querysql>
+        <countsql>select count(1) from report_drug_use_setting</countsql>
+        <hdfsfilepath>sys_config_path/task_name/report_drug_use_setting</hdfsfilepath>
+    </database>
+    <database>
+        <driver>net.sf.log4jdbc.DriverSpy</driver>
+        <url>jdbc:log4jdbc:mysql://10.1.1.186:3306/ipharmacare_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;rewriteBatchedStatements=true&amp;useAffectedRows=true&amp;autoReconnect=true</url>
+        <username>6F57B3E645235EC166FD778DC4AB3395</username>
+        <password>C514325DA1774174736A16498FF68673</password>
+        <querysql>select uid, username, medorg_id from auth_user where state = 1</querysql>
+        <countsql>select count(1) from auth_user where state = 1</countsql>
+        <hdfsfilepath>sys_config_path/task_name/auth_user</hdfsfilepath>
+    </database>
+</databases>

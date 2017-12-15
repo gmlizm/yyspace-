@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+  <property name="APP_LOG_NAME" value="${ipharm.app.name}" />
+  <contextName>${APP_LOG_NAME}</contextName>
+  
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="APPLOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${IPHARM_HOME}/logs/med_today_${APP_LOG_NAME}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${IPHARM_HOME}/logs/log_%d{yyyyMMdd}_${APP_LOG_NAME}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <!-- <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy> -->
+    </rollingPolicy>
+    <encoder>
+      <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{80} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <!-- xml error log config -->
+  <appender name="GYXMLLOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+      <evaluator>
+        <expression>return marker.getName()=="GYXMLLOG";</expression>   
+      </evaluator>  
+      <onMatch>NEUTRAL</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <file>${IPHARM_HOME}/logs/med_today_gyxml.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${IPHARM_HOME}/logs/log_%d{yyyyMMdd}_gyxml.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <!-- <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy> -->
+    </rollingPolicy>
+    <encoder>
+      <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{80} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <!-- redis cache log config -->
+  <appender name="REDISCACHELOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+      <evaluator>
+        <expression>return marker.getName()=="REDISCACHELOG";</expression>   
+      </evaluator>  
+      <onMatch>NEUTRAL</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <file>${IPHARM_HOME}/logs/med_today_rediscache.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${IPHARM_HOME}/logs/log_%d{yyyyMMdd}_rediscache.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <!-- <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy> -->
+    </rollingPolicy>
+    <encoder>
+      <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{80} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <logger name="com.ipharmacare.platform.gyas" level="ERROR" addtivity="false" >
+    <appender-ref ref="GYXMLLOG" />
+  </logger>
+  
+  <logger name="com.ipharmacare.platform.redis" level="ERROT" addtivity="trues" >
+    <appender-ref ref="REDISCACHELOG" />
+  </logger>
+
+  <logger name="com.ipharmacare" level="ERROR" addtivity="true" />
+  <logger name="jdbc.sqltiming" level="ERROR" addtivity="true" />
+  <root level="ERROR">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="APPLOG" />
+  </root>
+</configuration>

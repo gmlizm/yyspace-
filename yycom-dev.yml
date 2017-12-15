@@ -1,0 +1,162 @@
+### yyspace docker-compose for services
+version: "3.2"
+
+services:
+######################################################
+### service container
+######################################################
+  medall:
+    image: yyjdk:latest
+    command: /yyspace/bin/ass.sh start all
+    container_name: ${medall_name}
+    hostname: ${medall_name}
+    depends_on:
+      - syscenter
+    environment:
+      DUBBO_PROTOCOL_PORT: ${medall_dubboport}
+      ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
+      REDIS_HOST: ${LOCALHOST}
+      REDIS_PORT: ${REDIS_PORT}
+    network_mode: host
+    extra_hosts:
+      - "${medall_name}:${LOCALHOST}"
+    volumes:
+      - .:/yyspace
+
+  baseengine:
+    image: yyjdk:latest
+    command: /yyspace/bin/ass.sh start engine
+    container_name: ${baseengine_name}
+    hostname: ${baseengine_name}
+    depends_on:
+      - syscenter
+      - baseknow
+    environment:
+      DUBBO_PROTOCOL_PORT: ${baseengine_dubboport}
+      ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
+      REDIS_HOST: ${LOCALHOST}
+      REDIS_PORT: ${REDIS_PORT}
+    network_mode: host
+    extra_hosts:
+      - "${baseengine_name}:${LOCALHOST}"
+    volumes:
+      - .:/yyspace
+
+
+  baseknow:
+    image: yyjdk:latest
+    command: /yyspace/bin/ass.sh start base
+    container_name: ${baseknow_name}
+    hostname: ${baseknow_name}
+    depends_on:
+      - syscenter
+    environment:
+      DUBBO_PROTOCOL_PORT: ${baseknow_dubboport}
+      ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
+      REDIS_HOST: ${LOCALHOST}
+      REDIS_PORT: ${REDIS_PORT}
+    network_mode: host
+    extra_hosts:
+      - "${baseknow_name}:${LOCALHOST}"
+    volumes:
+      - .:/yyspace
+
+  syscenter:
+    #build:
+    #  context: ./xdockers/dockfiles
+    #  dockerfile: syscenter_dockfile
+    image: yyjdk:latest
+    command: /yyspace/bin/ass.sh start syscenter
+    container_name: ${syscenter_name}
+    hostname: ${syscenter_name}
+    depends_on:
+      - srv_zookeeper
+      - db_redis
+      #- db_mysql
+    environment:
+      DUBBO_PROTOCOL_PORT: ${syscenter_dubboport}
+      ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
+      REDIS_HOST: ${LOCALHOST}
+      REDIS_PORT: ${REDIS_PORT}
+    network_mode: host
+    extra_hosts:
+      - "${syscenter_name}:${LOCALHOST}"
+    volumes:
+      - .:/yyspace
+      #- type: bind
+      #  source: .
+      #  target: /yyspace
+    
+  
+######################################################
+### common container
+######################################################
+  db_mysql:
+    image: mysql/mysql-server:latest
+    container_name: ${MYSQL_NAME}
+    hostname: ${MYSQL_NAME}
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_LOG_CONSOLE: "false"
+    networks:
+      - znet
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - type: bind
+        source: ./xdockers/conf/my.cnf
+        target: /etc/my.cnf
+      - type: bind
+        source: ./xdockers/data/mysql/data
+        target: /var/lib/mysql
+      - type: bind
+        source: ./xdockers/data/mysql/log
+        target: /var/log
+
+  db_redis:
+    image: redis:latest
+    container_name: ${REDIS_NAME}
+    hostname: ${REDIS_NAME}
+    command: redis-server /data/redis.conf
+    #environment:
+    #  REDIS_ENV_ITEM: 'XXX'
+    networks:
+      - znet
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - type: bind
+        source: ./xdockers/conf/redis.conf
+        target: /data/redis.conf
+      - type: bind
+        source: ./xdockers/data/redis/data
+        target: /data
+
+  srv_zookeeper:
+    image: zookeeper:latest
+    container_name: ${ZOOKEEPER_NAME}
+    hostname: ${ZOOKEEPER_NAME}
+    environment:
+      ZOO_PORT: 2181
+      ZOO_TICK_TIME: 2000
+      ZOO_INIT_LIMIT: 5
+      ZOO_SYNC_LIMIT: 2
+      ZOO_MAX_CLIENT_CNXNS: 60
+      ZOO_MY_ID: 1
+      #ZOO_SERVERS: server.1=${ZOOKEEPER_NAME}:2888:3888
+    networks:
+      - znet
+    ports:
+      - "${ZOOKEEPER_PORT}:2181"
+    volumes:
+      - type: bind
+        source: ./xdockers/data/zookeeper/data
+        target: /data
+      - type: bind
+        source: ./xdockers/data/zookeeper/datalog
+        target: /datalog
+
+
+networks:
+  znet:
