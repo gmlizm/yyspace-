@@ -1,0 +1,35 @@
+==数据库说明
+
+系统中心库: ipharmacare_syscenter
+知识平台库: ipharmacare_knowledge
+引擎库: new_engine
+业务系统库：
+  - 干预库: ipharmacare_gy
+  - 点评库: ipharmacare_dp
+  - 上报库: ipharmacare_upload
+  - 报表库: ipharmacare_report
+
+
+创建数据库命令:
+CREATE DATABASE `ipharmacare_syscenter` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE `ipharmacare_knowledge` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE `ipharmacare_gy` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE `ipharmacare_dp` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE `ipharmacare_upload` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE `ipharmacare_report` /*!40100 DEFAULT CHARACTER SET utf8 */;
+
+
+数据库跨库拷贝命令:
+mysqldump -uroot -proot --add-drop-database db_name | mysql -h 10.1.2.144 -uroot -proot db_name
+
+通过指定--databases db_name --add-drop-databases 后续导入可以不用指定数据库名称
+mysqldump -uroot -proot --databases db_name --add-drop-database | mysql -h 10.1.1.134 -uroot -proot
+mysqldump --help
+
+
+以上方案适用于小数据量的数据库。下面来个大容量（1G以上）的。
+1  mysqldump -uroot -ppassword --quick Portal_DEV | gzip > Portal_DEV.contents.gz
+通过以上命令，将Portal_DEV数据库导成Portal_DEV.contents.gz压缩文件。
+
+gunzip < Portal_DEV.contents.gz | mysql -uroot -ppassword Portal_Optimize
+然后通过以上命令，将Portal_DEV导入Portal_Optimize数据库。
