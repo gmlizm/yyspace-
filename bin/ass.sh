@@ -9,7 +9,7 @@ if [[ -z $IPHARM_HOME ]] || [[ ! -x $IPHARM_HOME ]]; then IPHARM_HOME=$(cd `dirn
 #set properties
 case $2 in
     syscenter)
-        APP_DIR="sys" && SERVICE_NAME="systemcenter-provider"
+        APP_DIR="apps/sys" && SERVICE_NAME="systemcenter-provider"
         DUBBO_PROPERTIES_FILE="sys_center.properties"
 	;;
     knowledge)
@@ -17,30 +17,30 @@ case $2 in
         DUBBO_PROPERTIES_FILE="knowledge_provider.properties"
 	;;
     engine)
-        APP_DIR="engine" && SERVICE_NAME="engine-provider"
+        APP_DIR="apps/engine" && SERVICE_NAME="engine-provider"
         DUBBO_PROPERTIES_FILE="engine-provider.properties"
 	;;
     gy|dp|report|upload|all)
-        APP_DIR="med" && SERVICE_NAME="med_$2"
+        APP_DIR="apps/med" && SERVICE_NAME="med_$2"
         DUBBO_PROPERTIES_FILE="${SERVICE_NAME}.properties"
 	;;
     *)
-	echo "ERROR: second param only accept [syscenter|base|engine|medall|gy|dp|report|upload]!"
-        echo -e "\tfor syscenter use : \n\t\t#> $0 start sys"
-        echo -e "\tfor knowledge use : \n\t\t#> $0 start base"
+	echo "ERROR: second param only accept [syscenter|knowledge|engine|all|gy|dp|report|upload]!"
+        echo -e "\tfor syscenter use : \n\t\t#> $0 start syscenter"
+        echo -e "\tfor knowledge use : \n\t\t#> $0 start knowledge"
         echo -e "\tfor med       use : \n\t\t#> $0 start [all|gy|dp|report|upload]"
         exit 0
 	;;
 esac
 
 APP_DIR=$IPHARM_HOME/$APP_DIR && APP_WORKDIR=$APP_DIR/work
-TAR_NAME=$(ls $APP_DIR/ext|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.tar\.gz"|cut -f 1) && JAR_NAME=${TAR_NAME%.tar.gz}\.jar
+TAR_NAME=$(ls $APP_DIR/ext|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.tar\.gz"|cut -f 1)
 PID_FILE=$IPHARM_HOME/bin/.tmp/${SERVICE_NAME}.pid
 
 # parse used config
 SERVER_PORT=`sed '/dubbo.protocol.port/!d;s/.*=//' $APP_DIR/etc/$DUBBO_PROPERTIES_FILE | tr -d '\r'`
 JVM_OPTION=`sed '/JVM_OPTION/!d;s/=//;s/JVM_OPTION//' $APP_DIR/etc/$DUBBO_PROPERTIES_FILE | tr -d '\r'`
-if [ -z "$JVM_OPTION" ];then JVM_OPTION="-server -Xms512m -Xmx2g -Xmn128m -XX:+UseParallelGC -XX:PermSize=256M"; fi
+if [ -z "$JVM_OPTION" ];then JVM_OPTION="-server -Xms512m -Xmx512m -Xmn128m -XX:+UseParallelGC -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M"; fi
 JVM_OPTION=$JVM_OPTION' -agentpath:'$IPHARM_HOME'/bin/hook/libipharmacare_hook.so'
 
 # execute command
@@ -54,10 +54,10 @@ case "$1" in
         # process tar.gz package
         rm -rf $APP_WORKDIR/$SERVICE_NAME; mkdir -p $APP_WORKDIR
         tar -C $APP_WORKDIR -xzf $APP_DIR/ext/$TAR_NAME
+        JAR_NAME=$(ls $APP_WORKDIR|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.jar"|cut -f 1)
         
         #################################################-knowledge
         if [ $2 == "knowledge" ]; then
-            JAR_NAME=$(ls $APP_WORKDIR|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.jar"|cut -f 1)
             ${JRE_HOME}/bin/java -jar -DIPHARM_HOME=${IPHARM_HOME} -Detcdir=$APP_DIR/etc -Dipharm.app.name=$2 ${APP_WORKDIR}/$JAR_NAME 2>&1 
         #################################################-knowledge
         else
