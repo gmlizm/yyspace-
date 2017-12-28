@@ -7,15 +7,10 @@ LABEL version="1.0" author="lizm" description="dockerfile for yyjdk image"
 ARG JAVADIR=jdk1.8.0_151
 
 # config jdk
-COPY $JAVADIR/ /opt/$JAVADIR
-ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 TIMEZONE=Asia/Shanghai IPHARM_HOME=/yyspace JAVA_HOME=/opt/${JAVADIR} JRE_HOME=$JAVA_HOME/jre PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
-RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && echo $TIMEZONE > /etc/timezone && yum install -y net-tools
+COPY jdk*.tar.gz /opt/
+# set env
+ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 TIMEZONE=Asia/Shanghai IPHARM_HOME=/yyspace JAVA_HOME=/opt/${JAVADIR} JRE_HOME=/opt/$JAVADIR/jre
+ENV PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
 
-#config language
-#RUN yum groupinstall -y fonts
-#ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-
-# VOLUME ["${IPHARM_HOME}/apps", "${IPHARM_HOME}/logs"]
-
-#EXPOSE 20880
-
+# run command
+RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && echo $TIMEZONE > /etc/timezone && yum install -y net-tools && yum groupinstall -y fonts && tar -xzf /opt/jdk*.tar.gz -C /opt
