@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<included>
+    <property name="log.base" value="." />
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%class:%line] %-5level - %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="ipharmacare-dubbo" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${IPHARM_HOME}/logs/knowledge-provider.log</file>
+
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%class:%line] %-5level - %m%n</pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${IPHARM_HOME}/logs/knowledge-provider-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+	</appender>
+
+    <logger name="com.ipharmacare" level="INFO" />
+    <logger name="org.apache.ibatis" level="INFO" />
+    <logger name="dao" level="INFO"/>
+    
+    <logger name="java.sql" level="INFO" />
+    <logger name="org.springframework.jdbc.core.JdbcTemplate" level="INFO" />
+    
+	<root level="INFO">
+		<appender-ref ref="ipharmacare-dubbo" />
+	</root>
+</included>

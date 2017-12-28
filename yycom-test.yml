@@ -18,44 +18,44 @@ services:
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
     networks:
-      - znet
+      - yynet
     volumes:
       - .:/yyspace
 
 
-  baseengine:
+  engine:
     image: yyjdk:latest
     command: /yyspace/bin/ass.sh start engine
-    container_name: ${baseengine_name}
-    hostname: ${baseengine_name}
+    container_name: ${engine_name}
+    hostname: ${engine_name}
     depends_on:
       - syscenter
-      - baseknow
+      - knowledge
     environment:
-      DUBBO_PROTOCOL_PORT: ${baseengine_dubboport}
+      DUBBO_PROTOCOL_PORT: ${engine_dubboport}
       ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
     networks:
-      - znet
+      - yynet
     volumes:
       - .:/yyspace
 
 
-  baseknow:
+  knowledge:
     image: yyjdk:latest
-    command: /yyspace/bin/ass.sh start base
-    container_name: ${baseknow_name}
-    hostname: ${baseknow_name}
+    command: /yyspace/bin/ass.sh start knowledge
+    container_name: ${knowledge_name}
+    hostname: ${knowledge_name}
     depends_on:
       - syscenter
     environment:
-      DUBBO_PROTOCOL_PORT: ${baseknow_dubboport}
+      DUBBO_PROTOCOL_PORT: ${knowledge_dubboport}
       ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
     networks:
-      - znet
+      - yynet
     volumes:
       - .:/yyspace
 
@@ -78,7 +78,7 @@ services:
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
     networks:
-      - znet
+      - yynet
     volumes:
       - .:/yyspace
       #- type: bind
@@ -98,7 +98,7 @@ services:
       MYSQL_ROOT_HOST: "%"
       MYSQL_LOG_CONSOLE: "false"
     networks:
-      - znet
+      - yynet
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
@@ -120,7 +120,7 @@ services:
     #environment:
     #  REDIS_ENV_ITEM: 'XXX'
     networks:
-      - znet
+      - yynet
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
@@ -144,7 +144,7 @@ services:
       ZOO_MY_ID: 1
       #ZOO_SERVERS: server.1=${ZOOKEEPER_NAME}:2888:3888
     networks:
-      - znet
+      - yynet
     ports:
       - "${ZOOKEEPER_PORT}:2181"
     volumes:
@@ -157,4 +157,4 @@ services:
 
 
 networks:
-  znet:
+  yynet:

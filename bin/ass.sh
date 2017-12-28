@@ -4,24 +4,24 @@
 if [[ -z $IPHARM_HOME ]] || [[ ! -x $IPHARM_HOME ]]; then IPHARM_HOME=$(cd `dirname $0`/..; pwd); fi
 
 # set JAVA_HOME and JRE_HOME
-JAVA_HOME=$JAVA_HOME && JRE_HOME=$JAVA_HOME/jre
+#JAVA_HOME=$IPHARM_HOME/tool/jdk1.8.0_112 && JRE_HOME=$JAVA_HOME/jre
 
 #set properties
 case $2 in
     syscenter)
-        APP_DIR="apps/sys" && SERVICE_NAME="systemcenter-provider"
+        APP_DIR="sys" && SERVICE_NAME="systemcenter-provider"
         DUBBO_PROPERTIES_FILE="sys_center.properties"
 	;;
-    base)
-        APP_DIR="apps/base" && SERVICE_NAME="knowledge"
-        DUBBO_PROPERTIES_FILE="base_dubbo.properties"
+    knowledge)
+        APP_DIR="knowledge" && SERVICE_NAME="knowledge"
+        DUBBO_PROPERTIES_FILE="knowledge_provider.properties"
 	;;
     engine)
-        APP_DIR="apps/engine" && SERVICE_NAME="engine-provider"
+        APP_DIR="engine" && SERVICE_NAME="engine-provider"
         DUBBO_PROPERTIES_FILE="engine-provider.properties"
 	;;
     gy|dp|report|upload|all)
-        APP_DIR="apps/med" && SERVICE_NAME="med_$2"
+        APP_DIR="med" && SERVICE_NAME="med_$2"
         DUBBO_PROPERTIES_FILE="${SERVICE_NAME}.properties"
 	;;
     *)
@@ -34,7 +34,7 @@ case $2 in
 esac
 
 APP_DIR=$IPHARM_HOME/$APP_DIR && APP_WORKDIR=$APP_DIR/work
-TAR_NAME=$(ls $APP_DIR/ext|sort -r|grep -m 1 -E "$SERVICE_NAME-[0-9\.]+(-.*)?\.tar\.gz"|cut -f 1) && JAR_NAME=${TAR_NAME%.tar.gz}\.jar
+TAR_NAME=$(ls $APP_DIR/ext|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.tar\.gz"|cut -f 1) && JAR_NAME=${TAR_NAME%.tar.gz}\.jar
 PID_FILE=$IPHARM_HOME/bin/.tmp/${SERVICE_NAME}.pid
 
 # parse used config
@@ -46,23 +46,25 @@ JVM_OPTION=$JVM_OPTION' -agentpath:'$IPHARM_HOME'/bin/hook/libipharmacare_hook.s
 # execute command
 case "$1" in
     start)
-        #################################################-knowledge
-        if [ $2 == "base" ]; then
-            ${JRE_HOME}/bin/java -jar -DIPHARM_HOME=${IPHARM_HOME} -Detcdir=$APP_DIR/etc -Dipharm.app.name=$2 ${APP_DIR}/knowledge-dubbo-1.2.0-SNAPSHOT.jar 2>&1; exit 0;
-        fi
-        #################################################-knowledge
-        
         if [ -z "$SERVER_PORT" ]; then echo "ERROR: CONFIG dubbo.protocol.port not define!"; exit 0; fi
         _XCOUNT=`netstat -tln | grep $SERVER_PORT | wc -l`
         if [ $_XCOUNT -gt 0 ]; then echo "ERROR: SERVICE $SERVICE_NAME on port $SERVER_PORT already used!"; exit 0; fi
         if [ ! -f $APP_DIR/ext/$TAR_NAME ]; then echo "ERROR: $APP_DIR/ext/$TAR_NAME not exists!"; exit 0; fi
-        
+
         # process tar.gz package
         rm -rf $APP_WORKDIR/$SERVICE_NAME; mkdir -p $APP_WORKDIR
         tar -C $APP_WORKDIR -xzf $APP_DIR/ext/$TAR_NAME
-        #start
-        APP_OPTS="-DIPHARM_HOME=${IPHARM_HOME} -Dipharm.app.name=$2 -Dipharm.app.props=${SERVICE_NAME}"
-        $JRE_HOME/bin/java $JVM_OPTION $APP_OPTS -cp $APP_DIR/etc:$APP_WORKDIR/$SERVICE_NAME/lib/*.jar:$APP_WORKDIR/$SERVICE_NAME/$JAR_NAME com.alibaba.dubbo.container.Main 2>&1
+        
+        #################################################-knowledge
+        if [ $2 == "knowledge" ]; then
+            JAR_NAME=$(ls $APP_WORKDIR|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.jar"|cut -f 1)
+            ${JRE_HOME}/bin/java -jar -DIPHARM_HOME=${IPHARM_HOME} -Detcdir=$APP_DIR/etc -Dipharm.app.name=$2 ${APP_WORKDIR}/$JAR_NAME 2>&1 
+        #################################################-knowledge
+        else
+            #start
+            APP_OPTS="-DIPHARM_HOME=${IPHARM_HOME} -Dipharm.app.name=$2 -Dipharm.app.props=${SERVICE_NAME}"
+            $JRE_HOME/bin/java $JVM_OPTION $APP_OPTS -cp $APP_DIR/etc:$APP_WORKDIR/$SERVICE_NAME/lib/*.jar:$APP_WORKDIR/$SERVICE_NAME/$JAR_NAME com.alibaba.dubbo.container.Main 2>&1 
+        fi
         
         mkdir -p ${PID_FILE%\/*}
         echo $! > $PID_FILE
