@@ -54,10 +54,11 @@ case "$1" in
         # process tar.gz package
         rm -rf $APP_WORKDIR/$SERVICE_NAME; mkdir -p $APP_WORKDIR
         tar -C $APP_WORKDIR -xzf $APP_DIR/ext/$TAR_NAME
-        JAR_NAME=$(ls $APP_WORKDIR|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.jar"|cut -f 1)
+        JAR_NAME=$(ls $APP_WORKDIR/${SERVICE_NAME}|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.jar"|cut -f 1)
         
         #################################################-knowledge
         if [ $2 == "knowledge" ]; then
+            JAR_NAME=$(ls $APP_WORKDIR|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\.jar"|cut -f 1)
             ${JRE_HOME}/bin/java -jar -DIPHARM_HOME=${IPHARM_HOME} -Detcdir=$APP_DIR/etc -Dipharm.app.name=$2 ${APP_WORKDIR}/$JAR_NAME 2>&1 
         #################################################-knowledge
         else
