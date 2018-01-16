@@ -38,8 +38,8 @@ TAR_NAME=$(ls $APP_DIR/ext|sort -r|grep -m 1 -E "$SERVICE_NAME.*-[0-9\.]+(-.*)?\
 PID_FILE=$IPHARM_HOME/bin/.tmp/${SERVICE_NAME}.pid
 
 # parse used config
-SERVER_PORT=`sed '/dubbo.protocol.port/!d;s/.*=//' $APP_DIR/etc/$DUBBO_PROPERTIES_FILE | tr -d '\r'`
-JVM_OPTION=`sed '/JVM_OPTION/!d;s/=//;s/JVM_OPTION//' $APP_DIR/etc/$DUBBO_PROPERTIES_FILE | tr -d '\r'`
+SERVER_PORT=`sed '/^dubbo.protocol.port/!d;s/.*=//' $APP_DIR/etc/$DUBBO_PROPERTIES_FILE | tr -d '\r'`
+JVM_OPTION=`sed '/^JVM_OPTION/!d;s/=//;s/JVM_OPTION//' $APP_DIR/etc/$DUBBO_PROPERTIES_FILE | tr -d '\r'`
 if [ -z "$JVM_OPTION" ];then JVM_OPTION="-server -Xms512m -Xmx512m -Xmn128m -XX:+UseParallelGC -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M"; fi
 JVM_OPTION=$JVM_OPTION' -agentpath:'$IPHARM_HOME'/bin/hook/libipharmacare_hook.so'
 
