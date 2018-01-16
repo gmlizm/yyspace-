@@ -15,7 +15,7 @@ mkdir -p ${SQLDIR}
 function expdb(){
   if [[ -n $1 && -n $2 ]]; then
     echo "###### START: export db $1"
-    mysqldump -h ${FROM_DBHOST} -u ${FROM_DBUSER} -p ${FROM_DBPWD} --no-data $1 | gzip > ${SQLDIR}/db_$2.gz
+    mysqldump -h${FROM_DBHOST} -u${FROM_DBUSER} -p${FROM_DBPWD} $1 | gzip > ${SQLDIR}/db_$2.gz
     echo "###### OVER: export db $1"
   else
     echo "params error! PARAMS: $@"
@@ -25,7 +25,7 @@ function expdb(){
 function impdb(){
   if [[ -n $1 && -n $2 ]]; then
     echo "###### START: import db $1"
-    mysql -h ${TO_DBHOST} -u ${TO_DBUSER} -p ${TO_DBPWD} --show-warnings=false -e "DROP DATABASE IF EXISTS $1; CREATE DATABASE $1 DEFAULT CHARACTER SET utf8"
+    mysql -h${TO_DBHOST} -u${TO_DBUSER} -p${TO_DBPWD} -e "DROP DATABASE IF EXISTS $1; CREATE DATABASE $1 DEFAULT CHARACTER SET utf8"
     gunzip < ${SQLDIR}/db_$2.gz|mysql -h ${TO_DBHOST} -u ${TO_DBUSER} -p ${TO_DBPWD} --show-warnings=false $1
     echo "###### OVER: import db $1"
   else
@@ -35,11 +35,11 @@ function impdb(){
 
 echo "#######BEGINE EXPORT#######################################################"
 for ODB in $DBLIST; do
-  expdb $ODB ${IDB/[0-9]*/}
+  expdb $ODB ${ODB/[0-9]*/}
 done
 
 echo "#######BEGINE IMPORT#######################################################"
 for ODB in $DBLIST; do
   #IDB=${ODB#*\_}
-  impdb ${ODB/[0-9]*/} ${IDB/[0-9]*/}
+  impdb ${ODB/[0-9]*/} ${ODB/[0-9]*/}
 done
