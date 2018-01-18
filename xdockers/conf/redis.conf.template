@@ -1,0 +1,299 @@
+# 连接方式
+
+bind 10.1.1.134
+
+# 访问口令
+
+requirepass ipharmacare
+
+# 启用守护进程，它会写一个 pid 到 /var/run/redis.pid 文件里面
+
+daemonize yes
+ 
+# 启用守护进程时，pid 默认写到 /var/run/redis.pid 文件里面，自定义位置
+
+pidfile /var/run/redis.pid
+ 
+# 监听端口号，默认为 6379，如果置为 0 ，redis 将不在 socket 上监听任何客户端连接
+
+port 6379
+ 
+# TCP 监听的最大容纳数量
+# 在高并发的环境下，你需要把这个值调高以避免客户端连接缓慢的问题。
+# Linux 内核会一声不响的把这个值缩小成 /proc/sys/net/core/somaxconn 对应的值，
+# 所以你要修改这两个值才能达到你的预期
+
+tcp-backlog 511
+ 
+# 指定在一个 client 空闲多少秒之后关闭连接（0 表示不管它）
+
+timeout 0
+ 
+# tcp 心跳包
+
+tcp-keepalive 0
+ 
+# 定义日志级别 
+# debug > verbose > notice > warning
+
+loglevel notice
+ 
+# 指定日志文件的位置
+
+logfile "redis.notice.log"
+ 
+# 数据库的数目
+
+databases 16
+ 
+################################ RDB 快照 ################################
+
+# 根据给定的时间间隔和写入次数将数据保存到磁盘
+# 300 秒内如果至少有 1000 个 key 的值变化，则保存快照
+# 停用：save ""
+ 
+save 300 1000
+
+# 设置 rdb 文件位置
+
+dbfilename dump.rdb
+
+# 工作目录，rdb 文件所在目录
+
+dir ./
+
+# 如果 redis 最后一次的后台保存失败，redis 将停止接受写操作
+
+stop-writes-on-bgsave-error yes
+ 
+# 是否在 dump .rdb 数据库的时候使用 LZF 压缩字符串
+
+rdbcompression yes
+ 
+# 是否校验 rdb 文件
+
+rdbchecksum yes
+
+############################## APPEND ONLY MODE ###############################
+ 
+# AOF 持久化开关
+ 
+appendonly no
+ 
+# 指定 AOF 持久化文件名
+ 
+appendfilename "appendonly.aof"
+ 
+# AOF 持久化频率
+# appendfsync always     每次有新命令追加到 AOF 文件时就执行一次 fsync ：非常慢，也非常安全
+# appendfsync everysec   每秒 fsync 一次：足够快（和使用 RDB 持久化差不多），并且在故障时只会丢失 1 秒钟的数据。
+# appendfsync no         从不 fsync ：将数据交给操作系统来处理。更快，也更不安全的选择
+
+appendfsync everysec
+
+# 是否自动对 AOF 文件进行重构，比例和尺寸
+ 
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+
+# 在进行 AOF 文件重构期间，是否暂停 AOF 同步
+ 
+no-appendfsync-on-rewrite no
+ 
+################################ LUA SCRIPTING  ###############################
+ 
+# 脚本的最长运行时间
+
+lua-time-limit 5000
+ 
+################################## 慢日志 ###################################
+ 
+# The Redis Slow Log is a system to log queries that exceeded a specified
+# execution time. The execution time does not include the I/O operations
+# like talking with the client, sending the reply and so forth,
+# but just the time needed to actually execute the command (this is the only
+# stage of command execution where the thread is blocked and can not serve
+# other requests in the meantime).
+# 
+# You can configure the slow log with two parameters: one tells Redis
+# what is the execution time, in microseconds, to exceed in order for the
+# command to get logged, and the other parameter is the length of the
+# slow log. When a new command is logged the oldest one is removed from the
+# queue of logged commands.
+ 
+# 执行时间慢于多少 微秒 的动作，记录到慢日志
+
+slowlog-log-slower-than 100000
+ 
+# 最多保存多少条日志
+
+slowlog-max-len 256
+ 
+############################# Event notification ##############################
+ 
+# Redis can notify Pub/Sub clients about events happening in the key space.
+# This feature is documented at http://redis.io/topics/keyspace-events
+# 
+# For instance if keyspace events notification is enabled, and a client
+# performs a DEL operation on key "foo" stored in the Database 0, two
+# messages will be published via Pub/Sub:
+#
+# PUBLISH __keyspace@0__:foo del
+# PUBLISH __keyevent@0__:del foo
+#
+# It is possible to select the events that Redis will notify among a set
+# of classes. Every class is identified by a single character:
+#
+#  K     Keyspace events, published with __keyspace@<db>__ prefix.
+#  E     Keyevent events, published with __keyevent@<db>__ prefix.
+#  g     Generic commands (non-type specific) like DEL, EXPIRE, RENAME, ...
+#  $     String commands
+#  l     List commands
+#  s     Set commands
+#  h     Hash commands
+#  z     Sorted set commands
+#  x     Expired events (events generated every time a key expires)
+#  e     Evicted events (events generated when a key is evicted for maxmemory)
+#  A     Alias for g$lshzxe, so that the "AKE" string means all the events.
+#
+#  The "notify-keyspace-events" takes as argument a string that is composed
+#  by zero or multiple characters. The empty string means that notifications
+#  are disabled at all.
+#
+#  Example: to enable list and generic events, from the point of view of the
+#           event name, use:
+#
+#  notify-keyspace-events Elg
+#
+#  Example 2: to get the stream of the expired keys subscribing to channel
+#             name __keyevent@0__:expired use:
+#
+#  notify-keyspace-events Ex
+#
+#  By default all notifications are disabled because most users don't need
+#  this feature and the feature has some overhead. Note that if you don't
+#  specify at least one of K or E, no events will be delivered.
+notify-keyspace-events ""
+maxmemory 128mb
+maxmemory-policy allkeys-lru
+ 
+############################### ADVANCED CONFIG ###############################
+ 
+# Hashes are encoded using a memory efficient data structure when they have a
+# small number of entries, and the biggest entry does not exceed a given
+# threshold. These thresholds can be configured using the following directives.
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+ 
+# Similarly to hashes, small lists are also encoded in a special way in order
+# to save a lot of space. The special representation is only used when
+# you are under the following limits:
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+ 
+# Sets have a special encoding in just one case: when a set is composed
+# of just strings that happens to be integers in radix 10 in the range
+# of 64 bit signed integers.
+# The following configuration setting sets the limit in the size of the
+# set in order to use this special memory saving encoding.
+set-max-intset-entries 512
+ 
+# Similarly to hashes and lists, sorted sets are also specially encoded in
+# order to save a lot of space. This encoding is only used when the length and
+# elements of a sorted set are below the following limits:
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+ 
+# HyperLogLog sparse representation bytes limit. The limit includes the
+# 16 bytes header. When an HyperLogLog using the sparse representation crosses
+# this limit, it is converted into the dense representation.
+#
+# A value greater than 16000 is totally useless, since at that point the
+# dense representation is more memory efficient.
+# 
+# The suggested value is ~ 3000 in order to have the benefits of
+# the space efficient encoding without slowing down too much PFADD,
+# which is O(N) with the sparse encoding. The value can be raised to
+# ~ 10000 when CPU is not a concern, but space is, and the data set is
+# composed of many HyperLogLogs with cardinality in the 0 - 15000 range.
+hll-sparse-max-bytes 3000
+ 
+# Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
+# order to help rehashing the main Redis hash table (the one mapping top-level
+# keys to values). The hash table implementation Redis uses (see dict.c)
+# performs a lazy rehashing: the more operation you run into a hash table
+# that is rehashing, the more rehashing "steps" are performed, so if the
+# server is idle the rehashing is never complete and some more memory is used
+# by the hash table.
+# 
+# The default is to use this millisecond 10 times every second in order to
+# active rehashing the main dictionaries, freeing memory when possible.
+#
+# If unsure:
+# use "activerehashing no" if you have hard latency requirements and it is
+# not a good thing in your environment that Redis can reply form time to time
+# to queries with 2 milliseconds delay.
+#
+# use "activerehashing yes" if you don't have such hard requirements but
+# want to free memory asap when possible.
+activerehashing yes
+ 
+# The client output buffer limits can be used to force disconnection of clients
+# that are not reading data from the server fast enough for some reason (a
+# common reason is that a Pub/Sub client can't consume messages as fast as the
+# publisher can produce them).
+#
+# The limit can be set differently for the three different classes of clients:
+#
+# normal -> normal clients
+# slave  -> slave clients and MONITOR clients
+# pubsub -> clients subscribed to at least one pubsub channel or pattern
+#
+# The syntax of every client-output-buffer-limit directive is the following:
+#
+# client-output-buffer-limit <class> <hard limit> <soft limit> <soft seconds>
+#
+# A client is immediately disconnected once the hard limit is reached, or if
+# the soft limit is reached and remains reached for the specified number of
+# seconds (continuously).
+# So for instance if the hard limit is 32 megabytes and the soft limit is
+# 16 megabytes / 10 seconds, the client will get disconnected immediately
+# if the size of the output buffers reach 32 megabytes, but will also get
+# disconnected if the client reaches 16 megabytes and continuously overcomes
+# the limit for 10 seconds.
+#
+# By default normal clients are not limited because they don't receive data
+# without asking (in a push way), but just after a request, so only
+# asynchronous clients may create a scenario where data is requested faster
+# than it can read.
+#
+# Instead there is a default limit for pubsub and slave clients, since
+# subscribers and slaves receive data in a push fashion.
+#
+# Both the hard or the soft limit can be disabled by setting them to zero.
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+ 
+# Redis calls an internal function to perform many background tasks, like
+# closing connections of clients in timeout, purging expired keys that are
+# never requested, and so forth.
+#
+# Not all tasks are performed with the same frequency, but Redis checks for
+# tasks to perform accordingly to the specified "hz" value.
+#
+# By default "hz" is set to 10. Raising the value will use more CPU when
+# Redis is idle, but at the same time will make Redis more responsive when
+# there are many keys expiring at the same time, and timeouts may be
+# handled with more precision.
+#
+# The range is between 1 and 500, however a value over 100 is usually not
+# a good idea. Most users should use the default of 10 and raise this up to
+# 100 only in environments where very low latency is required.
+hz 10
+ 
+# When a child rewrites the AOF file, if the following option is enabled
+# the file will be fsync-ed every 32 MB of data generated. This is useful
+# in order to commit the file to the disk more incrementally and avoid
+# big latency spikes.
+aof-rewrite-incremental-fsync yes
