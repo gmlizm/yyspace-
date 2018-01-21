@@ -13,7 +13,7 @@ services:
     depends_on:
       - syscenter
     environment:
-      DUBBO_PROTOCOL_PORT: ${medall_dubboport}
+      DUBBO_PORT: ${medall_dubboport}
       ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
@@ -32,7 +32,7 @@ services:
       - syscenter
       - knowledge
     environment:
-      DUBBO_PROTOCOL_PORT: ${engine_dubboport}
+      DUBBO_PORT: ${engine_dubboport}
       ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
@@ -50,7 +50,7 @@ services:
     depends_on:
       - syscenter
     environment:
-      DUBBO_PROTOCOL_PORT: ${knowledge_dubboport}
+      DUBBO_PORT: ${knowledge_dubboport}
       ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
@@ -73,7 +73,7 @@ services:
       - db_redis
       #- db_mysql
     environment:
-      DUBBO_PROTOCOL_PORT: ${syscenter_dubboport}
+      DUBBO_PORT: ${syscenter_dubboport}
       ZK_SERVER: ${LOCALHOST}:${ZOOKEEPER_PORT}
       REDIS_HOST: ${LOCALHOST}
       REDIS_PORT: ${REDIS_PORT}
